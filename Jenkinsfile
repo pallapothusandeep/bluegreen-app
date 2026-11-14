@@ -46,10 +46,18 @@ pipeline {
         stage('Smoke Test') {
             steps {
                 sh '''
-                  POD_IP=$(kubectl get pods -l app=bg-app,color=$NEW -o jsonpath='{.items[0].status.podIP}')
-                  echo "Testing $NEW environment at $POD_IP"
-                  curl -s --max-time 10 http://$POD_IP:5000 | grep -i "$NEW"
-                  echo "Smoke test PASSED"
+                  for i in 1 2 3 4 5 6 7 8 9 10; do
+                    POD_IP=$(kubectl get pods -l app=bg-app,color=$NEW --field-selector=status.phase=Running -o jsonpath='{.items[0].status.podIP}')
+                    echo "Attempt $i: testing $NEW environment at $POD_IP"
+                    if curl -s --max-time 5 http://$POD_IP:5000 | grep -qi "$NEW"; then
+                      echo "Smoke test PASSED"
+                      exit 0
+                    fi
+                    echo "Not ready yet, waiting 3 seconds..."
+                    sleep 3
+                  done
+                  echo "Smoke test FAILED - traffic will NOT be switched"
+                  exit 1
                 '''
             }
         }
