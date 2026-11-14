@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bg-app-COLOR_PLACEHOLDER
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: bg-app
+      color: COLOR_PLACEHOLDER
+  template:
+    metadata:
+      labels:
+        app: bg-app
+        color: COLOR_PLACEHOLDER
+    spec:
+      containers:
+      - name: bg-app
+        image: IMAGE_PLACEHOLDER
+        ports:
+        - containerPort: 5000
+        env:
+        - name: COLOR
+          value: "COLOR_PLACEHOLDER"
+        - name: VERSION
+          value: "VERSION_PLACEHOLDER"
